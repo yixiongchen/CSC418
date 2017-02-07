@@ -393,7 +393,7 @@ void initGlui()
       global_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
     
-    
+
     // Add "Quit" button
     glui->add_separator();
     glui->add_button("Quit", 0, quitButton);
@@ -680,6 +680,10 @@ void updateBoid(int i)
  // rule? can you see any problems or ways
  // to improve this bit?
  ///////////////////////////////////////////
+ 
+ //implementaion for r_rule1
+    for (int i=0; i<nBoids; i++)
+    {
 
 
 
