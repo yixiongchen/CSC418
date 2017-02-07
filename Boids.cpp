@@ -142,7 +142,7 @@ float sign(float x){if (x>=0) return(1.0); else return(-1.0);}
 void updateBoid(int i);
 void drawBoid(int i);
 void HSV2RGB(float H, float S, float V, float *R, float *G, float *B);
-int radius_center(int r_rule1, float *boid);
+int radius_center(int r_rule1, float *boid_j, float *boid_i);
 // ******************** FUNCTIONS ************************
 
 /*
@@ -751,9 +751,9 @@ void updateBoid(int i)
     float r_rule2_vector[1][3];
 
     for(int j=0; j<nBoids; j++){
-      float x_d = square(Boid_Location[i][0] - Boid_Location[j][0]);
-      float y_d = square(Boid_Location[i][1] - Boid_Location[j][1]);
-      float z_d = square(Boid_Location[i][2] - Boid_Location[j][2]);
+      float x_d = powf(Boid_Location[i][0] - Boid_Location[j][0], 2);
+      float y_d = powf(Boid_Location[i][1] - Boid_Location[j][1], 2);
+      float z_d = powf(Boid_Location[i][2] - Boid_Location[j][2], 2);
       float distance_diff = sqrtf(x_d + y_d + z_d);
       // if distance with r_rule2
       if(i!=j && distance_diff < r_rule2){
@@ -807,6 +807,7 @@ void updateBoid(int i)
         pv_i[0][1] += Boid_Velocity[j][1];
         pv_i[0][2] += Boid_Velocity[j][2];
         r3_count ++;
+      }
     }
     pv_i[0][0] =  pv_i[0][0] / r3_count ;
     pv_i[0][1] =  pv_i[0][1] / r3_count ;
@@ -1223,10 +1224,10 @@ float *read3ds(const char *name, int *n)
   whether boid_i in the raidus of boid j
 */
 int radius_center(int r_rule1, float* boid_j, float* boid_i){
-  float x = square(boid_i[0] - boid_j[0])
-  float y = square(boid_i[1] - boid_j[1])
-  float z = square(boid_i[2] - boid_j[2])
-  if( (x+y+z) <= square(r_rule1)){
+  float x = powf(boid_i[0] - boid_j[0], 2);
+  float y = powf(boid_i[1] - boid_j[1], 2);
+  float z = powf(boid_i[2] - boid_j[2], 2);
+  if( (x+y+z) <= pow(r_rule1, 2)){
     return 1;
   }
   return 0;
