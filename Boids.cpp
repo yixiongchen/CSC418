@@ -341,8 +341,48 @@ void initGlui()
 
       GLUI_Spinner *r2_spinner
           = glui->add_spinner("r_rule2", GLUI_SPINNER_FLOAT, &r_rule2);
-      r2_spinner->set_speed();
+      r2_spinner->set_speed(5.0);
       r2_spinner->set_float_limits(1,15, GLUI_LIMIT_CLAMP);
+
+
+//  control for r_rule3
+
+      GLUI_Spinner *r3_spinner
+          = glui->add_spinner("r_rule3", GLUI_SPINNER_FLOAT, &r_rule3);
+      r3_spinner->set_speed(5.0);
+      r3_spinner->set_float_limits(10,100, GLUI_LIMIT_CLAMP);
+
+
+//  control for k_rule1
+
+      GLUI_Spinner *k1_spinner
+          = glui->add_spinner("k_rule1", GLUI_SPINNER_FLOAT, &k_rule1);
+      k1_spinner->set_speed(5.0);
+      k1_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
+
+
+//  control for k_rule2
+
+      GLUI_Spinner *k2_spinner
+          = glui->add_spinner("k_rule2", GLUI_SPINNER_FLOAT, &k_rule2);
+      k2_spinner->set_speed(5.0);
+      k2_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
+
+
+//  control for k_rule3
+
+      GLUI_Spinner *k3_spinner
+          = glui->add_spinner("k_rule3", GLUI_SPINNER_FLOAT, &k_rule3);
+      k3_spinner->set_speed(5.0);
+      k3_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
+
+
+//  control for k_rule0
+
+      GLUI_Spinner *k0_spinner
+          = glui->add_spinner("k_rule0", GLUI_SPINNER_FLOAT, &k_rule0);
+      k0_spinner->set_speed(5.0);
+      k0_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
 
 
