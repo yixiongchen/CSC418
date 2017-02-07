@@ -142,7 +142,7 @@ float sign(float x){if (x>=0) return(1.0); else return(-1.0);}
 void updateBoid(int i);
 void drawBoid(int i);
 void HSV2RGB(float H, float S, float V, float *R, float *G, float *B);
-
+int radius_center(int r_rule1, float *boid);
 // ******************** FUNCTIONS ************************
 
 /*
@@ -682,8 +682,38 @@ void updateBoid(int i)
  ///////////////////////////////////////////
  
  //implementaion for r_rule1
-    for (int i=0; i<nBoids; i++)
-    {
+   float pc_i[1][3];
+   float vector[1][3];
+   pc_i[0][0] = 0;
+   pc_i[0][1] = 0;
+   pc_i[0][2] = 0;
+   for (int j=0; j<nBoids; j++){
+    if ( i != j && radius_center(r_rule1, Boid_Location[i], Boid_Location[j])==1){
+      pc_i[0][0] += Boid_Location[j][0];
+      pc_i[0][1] += Boid_Location[j][1];
+      pc_i[0][2] += Boid_Location[j][2];
+    }
+   }
+   //center of mass
+   pc_i[0][0] =  pc_i[0][0] / (nBoids - 1);
+   pc_i[0][1] =  pc_i[0][1] / (nBoids - 1);
+   pc_i[0][2] =  pc_i[0][2] / (nBoids - 1);
+   
+   vector[0][0] = pc_i[0][0] - Boid_Location[i][0];
+   vector[0][1] = pc_i[0][1] - Boid_Location[i][1];
+   vector[0][2] = pc_i[0][2] - Boid_Location[i][2];
+   
+
+   //update velocity of boid_i
+   Boid_Velocity[i][0] +=  vector[0][0] * k_rule1;
+   Boid_Velocity[i][1] +=  vector[0][1] * k_rule1;
+   Boid_Velocity[i][2] +=  vector[0][2] * k_rule1;
+   
+   //update position of boid_i
+   Boid_Location[i][0] += Boid_Velocity[i][0];
+   Boid_Location[i][1] += Boid_Velocity[i][1];
+   Boid_Location[i][2] += Boid_Velocity[i][2];
+
 
 
 
@@ -1145,5 +1175,20 @@ float *read3ds(const char *name, int *n)
  free(vertex_data);
  return(v_return);
 }
+
+/*
+  whether boid_i in the raidus of boid j
+*/
+int radius_center(int r_rule1, float* boid_j, float* boid_i){
+  float x = square(boid_i[0] - boid_j[0])
+  float y = square(boid_i[1] - boid_j[1])
+  float z = square(boid_i[2] - boid_j[2])
+  if( (x+y+z) <= square(r_rule1)){
+    return 1;
+  }
+  return 0;
+}
+
+
 
 
