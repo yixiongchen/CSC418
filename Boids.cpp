@@ -385,7 +385,15 @@ void initGlui()
       k0_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
 
+//  control for global_rot
 
+      GLUI_Spinner *global_spinner
+          = glui->add_spinner("global_rot", GLUI_SPINNER_FLOAT, &global_rot);
+      global_spinner->set_speed(5.0);
+      global_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
+
+    
+    
     // Add "Quit" button
     glui->add_separator();
     glui->add_button("Quit", 0, quitButton);
