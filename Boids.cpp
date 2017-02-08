@@ -675,7 +675,7 @@ void updateBoid(int i)
 
  ///////////////////////////////////////////
  // QUESTION:
- //  Is this the optimal way to implement this
+ // Is this the optimal way to implement this
  // rule? can you see any problems or ways
  // to improve this bit?
  ///////////////////////////////////////////
@@ -1063,7 +1063,7 @@ void drawBoid(int i)
  // Here I am setting the Boid's color to a fixed value,
  // you can use the Boid_Color[][] array instead if you
  // want to change boid colours yourself.
-
+ 
  glColor4f(1,.35,.1,1);	// This specifies colour as R,G,B,alpha.
 			// the alpha component specifies transparency.
 			// if alpha=1 the colour is completely opaque,
@@ -1074,7 +1074,7 @@ void drawBoid(int i)
 			// Apply necessary transformations to this boid
   glTranslatef(Boid_Location[i][0],Boid_Location[i][1],Boid_Location[i][2]);
   gluSphere(my_quad,.5,4,4);	// Draw this boid
- glPopMatrix();		// Restore transformation matrix so it's
+  glPopMatrix();		// Restore transformation matrix so it's
 			// ready for the next boid.
 
  ///////////////////////////////////////////
