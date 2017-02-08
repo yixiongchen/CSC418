@@ -390,7 +390,7 @@ void initGlui()
       GLUI_Spinner *global_spinner
           = glui->add_spinner("global_rot", GLUI_SPINNER_FLOAT, &global_rot);
       global_spinner->set_speed(5.0);
-      global_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
+      global_spinner->set_float_limits(0, 360, GLUI_LIMIT_CLAMP);
 
     
 
@@ -596,7 +596,6 @@ void updateBoid(int i)
    and read the reference material in order to understand how the position and
    velocity are updated.
  */
-
  ///////////////////////////////////////////
  // TO DO: Complete this function to update
  // the Boid's velocity and location
@@ -681,14 +680,16 @@ void updateBoid(int i)
  // to improve this bit?
  ///////////////////////////////////////////
  
+
+  float pc_i[1][3], pv_i[1][3], V1[1][3],V2[1][3],V3[1][3];
+  int r1_count, r3_count;
+  int j, k, p;
  //implementaion for r_rule1
-   float pc_i[1][3];
-   float vector[1][3];
-   int r1_count = 0;
+   r1_count = 0;
    pc_i[0][0] = 0;
    pc_i[0][1] = 0;
    pc_i[0][2] = 0;
-   for (int j=0; j<nBoids; j++){
+   for (j=0; j<nBoids; j++){
     //check radius
     if ( i != j && radius_center(r_rule1, Boid_Location[i], Boid_Location[j])==1){
       pc_i[0][0] += Boid_Location[j][0];
@@ -702,24 +703,15 @@ void updateBoid(int i)
    pc_i[0][1] =  pc_i[0][1] / r1_count;
    pc_i[0][2] =  pc_i[0][2] / r1_count;
    
-   vector[0][0] = pc_i[0][0] - Boid_Location[i][0];
-   vector[0][1] = pc_i[0][1] - Boid_Location[i][1];
-   vector[0][2] = pc_i[0][2] - Boid_Location[i][2];
+   V1[0][0] = pc_i[0][0] - Boid_Location[i][0];
+   V1[0][1] = pc_i[0][1] - Boid_Location[i][1];
+   V1[0][2] = pc_i[0][2] - Boid_Location[i][2];
 
    //update velocity of boid_i
-   Boid_Velocity[i][0] +=  vector[0][0] * k_rule1;
-   Boid_Velocity[i][1] +=  vector[0][1] * k_rule1;
-   Boid_Velocity[i][2] +=  vector[0][2] * k_rule1;
+   Boid_Velocity[i][0] +=  V1[0][0] * k_rule1;
+   Boid_Velocity[i][1] +=  V1[0][1] * k_rule1;
+   Boid_Velocity[i][2] +=  V1[0][2] * k_rule1;
    
-   /*
-   update position of boid_i
-   Boid_Location[i][0] += Boid_Velocity[i][0];
-   Boid_Location[i][1] += Boid_Velocity[i][1];
-   Boid_Location[i][2] += Boid_Velocity[i][2];
-   */
- 
-
-
 
  ///////////////////////////////////////////
  //
@@ -748,22 +740,20 @@ void updateBoid(int i)
  //  1 <= r_rule2 <= 15
  //  0 <= k_rule2 <= 1
  ///////////////////////////////////////////
-    float r_rule2_vector[1][3];
-
-    for(int j=0; j<nBoids; j++){
-      float x_d = powf(Boid_Location[i][0] - Boid_Location[j][0], 2);
-      float y_d = powf(Boid_Location[i][1] - Boid_Location[j][1], 2);
-      float z_d = powf(Boid_Location[i][2] - Boid_Location[j][2], 2);
+   for(k=0; k<nBoids; k++){
+      float x_d = powf(Boid_Location[i][0] - Boid_Location[k][0], 2);
+      float y_d = powf(Boid_Location[i][1] - Boid_Location[k][1], 2);
+      float z_d = powf(Boid_Location[i][2] - Boid_Location[k][2], 2);
       float distance_diff = sqrtf(x_d + y_d + z_d);
       // if distance with r_rule2
-      if(i!=j && distance_diff < r_rule2){
-        r_rule2_vector[0][0] = Boid_Location[j][0] - Boid_Location[i][0];
-        r_rule2_vector[0][1] = Boid_Location[j][1] - Boid_Location[i][1];
-        r_rule2_vector[0][2] = Boid_Location[j][2] - Boid_Location[i][2];
+      if(i!=k && distance_diff < r_rule2){
+        V2[0][0] = Boid_Location[k][0] - Boid_Location[i][0];
+        V2[0][1] = Boid_Location[k][1] - Boid_Location[i][1];
+        V2[0][2] = Boid_Location[k][2] - Boid_Location[i][2];
 
-        Boid_Velocity[i][0] -= r_rule2_vector[0][0]*k_rule2;
-        Boid_Velocity[i][1] -= r_rule2_vector[0][1]*k_rule2;
-        Boid_Velocity[i][2] -= r_rule2_vector[0][2]*k_rule2;   
+        Boid_Velocity[i][0] -= V2[0][0]*k_rule2;
+        Boid_Velocity[i][1] -= V2[0][1]*k_rule2;
+        Boid_Velocity[i][2] -= V2[0][2]*k_rule2;   
       }
     }
 
@@ -796,26 +786,25 @@ void updateBoid(int i)
  // 10 <= r_rule3 <= 100
  // 0 <= k_rule3 <= 1
  ///////////////////////////////////////////
-    float pv_i[1][3];
-    int r3_count = 0;
+    r3_count = 0;
     pv_i[0][0] = 0;
     pv_i[0][1] = 0;
     pv_i[0][2] = 0;
-    for(int j=0; j<nBoids; j++){
-       if ( i != j && radius_center(r_rule3, Boid_Location[i], Boid_Location[j])==1){
-        pv_i[0][0] += Boid_Velocity[j][0];
-        pv_i[0][1] += Boid_Velocity[j][1];
-        pv_i[0][2] += Boid_Velocity[j][2];
+    for(p=0; p<nBoids; p++){
+       if ( i != p && radius_center(r_rule3, Boid_Location[i], Boid_Location[p])==1){
+        pv_i[0][0] += Boid_Velocity[p][0];
+        pv_i[0][1] += Boid_Velocity[p][1];
+        pv_i[0][2] += Boid_Velocity[p][2];
         r3_count ++;
       }
     }
-    pv_i[0][0] =  pv_i[0][0] / r3_count ;
-    pv_i[0][1] =  pv_i[0][1] / r3_count ;
-    pv_i[0][2] =  pv_i[0][2] / r3_count ;
+    V3[0][0] =  pv_i[0][0] / r3_count ;
+    V3[0][1] =  pv_i[0][1] / r3_count ;
+    V3[0][2] =  pv_i[0][2] / r3_count ;
 
-    Boid_Velocity[i][0] += pv_i[0][0] * k_rule3;
-    Boid_Velocity[i][1] += pv_i[0][1] * k_rule3;
-    Boid_Velocity[i][2] += pv_i[0][2] * k_rule3;
+    Boid_Velocity[i][0] += V3[0][0] * k_rule3;
+    Boid_Velocity[i][1] += V3[0][1] * k_rule3;
+    Boid_Velocity[i][2] += V3[0][2] * k_rule3;
 
 
 
