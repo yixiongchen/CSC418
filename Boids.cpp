@@ -929,6 +929,9 @@ void updateBoid(int i)
  // QUESTION: Why add inertia at the end and
  //  not at the beginning?
  ///////////////////////////////////////////
+ Boid_Velocity[i][0]=Boid_Velocity[i][0]+ (Boid_Velocity[i][0] * k_rule0);
+ Boid_Velocity[i][1]=Boid_Velocity[i][1]+ (Boid_Velocity[i][1] * k_rule0);
+ Boid_Velocity[i][2]=Boid_Velocity[i][2]+ (Boid_Velocity[i][2] * k_rule0);
 
  ///////////////////////////////////////////
  //
@@ -937,7 +940,9 @@ void updateBoid(int i)
  // Finally (phew!) update the position
  // of this boid.
  ///////////////////////////////////////////
-
+ Boid_Location[i][0] = Boid_Location[i][0] + Boid_Velocity[i][0];
+ Boid_Location[i][1] = Boid_Location[i][1] + Boid_Velocity[i][1];
+ Boid_Location[i][2] = Boid_Location[i][2] + Boid_Velocity[i][2];
  ///////////////////////////////////////////
  // CRUNCHY:
  //
