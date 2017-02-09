@@ -143,6 +143,7 @@ void updateBoid(int i);
 void drawBoid(int i);
 void HSV2RGB(float H, float S, float V, float *R, float *G, float *B);
 int radius_center(int r_rule1, float *boid_j, float *boid_i);
+void drawbird(int i);
 // ******************** FUNCTIONS ************************
 
 /*
@@ -209,9 +210,23 @@ int main(int argc, char** argv)
 
      // Initialize boid colour to solid blue-ish
      // You may want to change this
-     Boid_Color[i][0]=.15;
-     Boid_Color[i][1]=.15;
-     Boid_Color[i][2]=1;
+     if(i % 2 == 0){
+      Boid_Color[i][0]=.9;
+      Boid_Color[i][1]=.9;
+      Boid_Color[i][2]= 0;
+     }
+     else if (i % 3 == 0){
+      Boid_Color[i][0]=.2;
+      Boid_Color[i][1]=.8;
+      Boid_Color[i][2]=.2;
+     }
+     else{
+      Boid_Color[i][0]=0;
+      Boid_Color[i][1]=.541;
+      Boid_Color[i][2]=.92;
+
+     }
+     
     }
 
     // Initialize glut, glui, and opengl
@@ -341,7 +356,7 @@ void initGlui()
 
       GLUI_Spinner *r2_spinner
           = glui->add_spinner("r_rule2", GLUI_SPINNER_FLOAT, &r_rule2);
-      r2_spinner->set_speed(5.0);
+      r2_spinner->set_speed(2.0);
       r2_spinner->set_float_limits(1,15, GLUI_LIMIT_CLAMP);
 
 
@@ -357,7 +372,7 @@ void initGlui()
 
       GLUI_Spinner *k1_spinner
           = glui->add_spinner("k_rule1", GLUI_SPINNER_FLOAT, &k_rule1);
-      k1_spinner->set_speed(5.0);
+      k1_spinner->set_speed(3.0);
       k1_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
 
@@ -365,7 +380,7 @@ void initGlui()
 
       GLUI_Spinner *k2_spinner
           = glui->add_spinner("k_rule2", GLUI_SPINNER_FLOAT, &k_rule2);
-      k2_spinner->set_speed(5.0);
+      k2_spinner->set_speed(3.0);
       k2_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
 
@@ -373,7 +388,7 @@ void initGlui()
 
       GLUI_Spinner *k3_spinner
           = glui->add_spinner("k_rule3", GLUI_SPINNER_FLOAT, &k_rule3);
-      k3_spinner->set_speed(5.0);
+      k3_spinner->set_speed(3.0);
       k3_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
 
@@ -381,7 +396,7 @@ void initGlui()
 
       GLUI_Spinner *k0_spinner
           = glui->add_spinner("k_rule0", GLUI_SPINNER_FLOAT, &k_rule0);
-      k0_spinner->set_speed(5.0);
+      k0_spinner->set_speed(3.0);
       k0_spinner->set_float_limits(0,1, GLUI_LIMIT_CLAMP);
 
 
@@ -389,7 +404,7 @@ void initGlui()
 
       GLUI_Spinner *global_spinner
           = glui->add_spinner("global_rot", GLUI_SPINNER_FLOAT, &global_rot);
-      global_spinner->set_speed(5.0);
+      global_spinner->set_speed(3.0);
       global_spinner->set_float_limits(0, 360, GLUI_LIMIT_CLAMP);
 
     
@@ -523,6 +538,7 @@ void WindowDisplay(void)
     // matrix.
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    glRotatef(global_rot, 0.0f, 1.0f, 0.0f);
 
     // Draw box bounding the viewing area
     glColor4f(.95,.95,.95,.95);
@@ -574,6 +590,8 @@ void WindowDisplay(void)
      drawBoid(i);		// Draw this boid
     }
 
+   
+
     // Make sure all OpenGL commands are executed
     glFlush();
 
@@ -583,10 +601,12 @@ void WindowDisplay(void)
 
   // synchronize variables that GLUT uses
   glui->sync_live();
-
   // Tell glut window to update itself
+
   glutSetWindow(windowID);
   glutPostRedisplay();
+
+
 }
 
 void updateBoid(int i)
@@ -680,18 +700,23 @@ void updateBoid(int i)
  // to improve this bit?
  ///////////////////////////////////////////
  
+  float origin_velocity[1][3];
+  origin_velocity[0][0] = Boid_Velocity[i][0];
+  origin_velocity[0][1] = Boid_Velocity[i][1];
+  origin_velocity[0][2] = Boid_Velocity[i][2];
 
   float pc_i[1][3], pv_i[1][3], V1[1][3],V2[1][3],V3[1][3];
   int r1_count, r3_count;
   int j, k, p;
  //implementaion for r_rule1
+  
    r1_count = 0;
    pc_i[0][0] = 0;
    pc_i[0][1] = 0;
    pc_i[0][2] = 0;
    for (j=0; j<nBoids; j++){
-    //check radius
-    if ( i != j && radius_center(r_rule1, Boid_Location[i], Boid_Location[j])==1){
+   //check radius
+    if ( (j != i) && (radius_center(r_rule3, Boid_Location[i], Boid_Location[j]) == 1)){
       pc_i[0][0] += Boid_Location[j][0];
       pc_i[0][1] += Boid_Location[j][1];
       pc_i[0][2] += Boid_Location[j][2];
@@ -699,18 +724,20 @@ void updateBoid(int i)
     }
    }
    //center of mass
-   pc_i[0][0] =  pc_i[0][0] / r1_count;
-   pc_i[0][1] =  pc_i[0][1] / r1_count;
-   pc_i[0][2] =  pc_i[0][2] / r1_count;
-   
-   V1[0][0] = pc_i[0][0] - Boid_Location[i][0];
-   V1[0][1] = pc_i[0][1] - Boid_Location[i][1];
-   V1[0][2] = pc_i[0][2] - Boid_Location[i][2];
+   if(r1_count != 0) {
+     pc_i[0][0] =  pc_i[0][0] / r1_count;
+     pc_i[0][1] =  pc_i[0][1] / r1_count;
+     pc_i[0][2] =  pc_i[0][2] / r1_count;
+     
+     V1[0][0] = pc_i[0][0] - Boid_Location[i][0];
+     V1[0][1] = pc_i[0][1] - Boid_Location[i][1];
+     V1[0][2] = pc_i[0][2] - Boid_Location[i][2];
 
-   //update velocity of boid_i
-   Boid_Velocity[i][0] +=  V1[0][0] * k_rule1;
-   Boid_Velocity[i][1] +=  V1[0][1] * k_rule1;
-   Boid_Velocity[i][2] +=  V1[0][2] * k_rule1;
+     //update velocity of boid_i
+     Boid_Velocity[i][0] +=  V1[0][0] * k_rule1;
+     Boid_Velocity[i][1] +=  V1[0][1] * k_rule1;
+     Boid_Velocity[i][2] +=  V1[0][2] * k_rule1;
+  }
    
 
  ///////////////////////////////////////////
@@ -740,6 +767,7 @@ void updateBoid(int i)
  //  1 <= r_rule2 <= 15
  //  0 <= k_rule2 <= 1
  ///////////////////////////////////////////
+   
    for(k=0; k<nBoids; k++){
       float x_d = powf(Boid_Location[i][0] - Boid_Location[k][0], 2);
       float y_d = powf(Boid_Location[i][1] - Boid_Location[k][1], 2);
@@ -756,6 +784,7 @@ void updateBoid(int i)
         Boid_Velocity[i][2] -= V2[0][2]*k_rule2;   
       }
     }
+    
 
 
 
@@ -786,26 +815,29 @@ void updateBoid(int i)
  // 10 <= r_rule3 <= 100
  // 0 <= k_rule3 <= 1
  ///////////////////////////////////////////
+    
     r3_count = 0;
     pv_i[0][0] = 0;
     pv_i[0][1] = 0;
     pv_i[0][2] = 0;
     for(p=0; p<nBoids; p++){
-       if ( i != p && radius_center(r_rule3, Boid_Location[i], Boid_Location[p])==1){
+       if ( (i != p) && (radius_center(r_rule3, Boid_Location[i], Boid_Location[p]) == 1)){
         pv_i[0][0] += Boid_Velocity[p][0];
         pv_i[0][1] += Boid_Velocity[p][1];
         pv_i[0][2] += Boid_Velocity[p][2];
         r3_count ++;
       }
     }
-    V3[0][0] =  pv_i[0][0] / r3_count ;
-    V3[0][1] =  pv_i[0][1] / r3_count ;
-    V3[0][2] =  pv_i[0][2] / r3_count ;
+    if(r1_count != 0) {
+      V3[0][0] =  pv_i[0][0] / r3_count ;
+      V3[0][1] =  pv_i[0][1] / r3_count ;
+      V3[0][2] =  pv_i[0][2] / r3_count ;
 
-    Boid_Velocity[i][0] += V3[0][0] * k_rule3;
-    Boid_Velocity[i][1] += V3[0][1] * k_rule3;
-    Boid_Velocity[i][2] += V3[0][2] * k_rule3;
-
+      Boid_Velocity[i][0] += (V3[0][0] - Boid_Velocity[i][0]) *k_rule3;
+      Boid_Velocity[i][1] += (V3[0][1] - Boid_Velocity[i][0]) *k_rule3;
+      Boid_Velocity[i][2] += (V3[0][2] - Boid_Velocity[i][0]) *k_rule3;
+   }
+   
 
 
  ///////////////////////////////////////////
@@ -891,9 +923,12 @@ void updateBoid(int i)
  //  The speed clamping used here was determined
  // 'experimentally', i.e. I tweaked it by hand!
  ///////////////////////////////////////////
- Boid_Velocity[i][0]=sign(Boid_Velocity[i][0])*sqrt(fabs(Boid_Velocity[i][0]));
- Boid_Velocity[i][1]=sign(Boid_Velocity[i][1])*sqrt(fabs(Boid_Velocity[i][1]));
- Boid_Velocity[i][2]=sign(Boid_Velocity[i][2])*sqrt(fabs(Boid_Velocity[i][2]));
+
+ 
+ Boid_Velocity[i][0]=sign(Boid_Velocity[i][0])*sqrt(fabs(Boid_Velocity[i][0]))/3;
+ Boid_Velocity[i][1]=sign(Boid_Velocity[i][1])*sqrt(fabs(Boid_Velocity[i][1]))/3;
+ Boid_Velocity[i][2]=sign(Boid_Velocity[i][2])*sqrt(fabs(Boid_Velocity[i][2]))/3;
+
 
  ///////////////////////////////////////////
  //
@@ -918,9 +953,9 @@ void updateBoid(int i)
  // QUESTION: Why add inertia at the end and
  //  not at the beginning?
  ///////////////////////////////////////////
- Boid_Velocity[i][0]=Boid_Velocity[i][0]+ (Boid_Velocity[i][0] * k_rule0);
- Boid_Velocity[i][1]=Boid_Velocity[i][1]+ (Boid_Velocity[i][1] * k_rule0);
- Boid_Velocity[i][2]=Boid_Velocity[i][2]+ (Boid_Velocity[i][2] * k_rule0);
+ Boid_Velocity[i][0]=Boid_Velocity[i][0]+ (origin_velocity[0][0]  * k_rule0);
+ Boid_Velocity[i][1]=Boid_Velocity[i][1]+ (origin_velocity[0][1]  * k_rule0);
+ Boid_Velocity[i][2]=Boid_Velocity[i][2]+ (origin_velocity[0][2]  * k_rule0);
 
  ///////////////////////////////////////////
  //
@@ -1073,7 +1108,9 @@ void drawBoid(int i)
  glPushMatrix();	// Save current transformation matrix
 			// Apply necessary transformations to this boid
   glTranslatef(Boid_Location[i][0],Boid_Location[i][1],Boid_Location[i][2]);
-  gluSphere(my_quad,.5,4,4);	// Draw this boid
+  //gluSphere(my_quad,5,4,4); 
+  
+  drawbird(i);
   glPopMatrix();		// Restore transformation matrix so it's
 			// ready for the next boid.
 
@@ -1228,5 +1265,24 @@ int radius_center(int r_rule1, float* boid_j, float* boid_i){
 }
 
 
-
+void drawbird(int i){
+      glRotatef(290.0, 1.0, 0.0, 0.0);
+      glBegin(GL_TRIANGLE_STRIP);
+      /* left wing */
+      glColor3f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2]);
+      glVertex3f(-7.0, 0.0, 2.0);
+      glVertex3f(-1.0, 0.0, 3.0);
+      glVertex3f(-1.0, 7.0, 3.0);
+      /* left side */
+      glColor4f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2], 0.7);
+      glVertex3f(0.0, 0.0, 0.0);
+      glVertex3f(0.0, 8.0, 0.0);
+      /* right side */
+      glVertex3f(1.0, 0.0, 3.0);
+      glVertex3f(1.0, 7.0, 3.0);
+      /* final tip of right wing */
+      glColor3f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2]);
+      glVertex3f(7.0, 0.0, 2.0);
+      glEnd();
+}
 
