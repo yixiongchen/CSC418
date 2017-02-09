@@ -44,7 +44,7 @@ Description/value		Completed	Partial	    Not done	Mark
 
 * Add conttrols for the
   variables that affect
-  Boid motion:
+  Boid motion: 
   k_rule1, k_rule2, k_rule3,
   k_rule0, r_rule2, r_rule3
   and global rotation.
@@ -52,7 +52,7 @@ Description/value		Completed	Partial	    Not done	Mark
 
 * Correctly implemented
   (working!) Boid update
-  rule 1
+  rule 1  
   (5 marks)
 
 * Correctly implemented

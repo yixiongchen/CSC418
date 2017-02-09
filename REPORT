@@ -7,12 +7,17 @@ __________________________________________________________________
    you found easier, harder, and/or tricky to get right
 
 
-
-
+The easy part is add controllers, I just followed the example, 
+and did the rest. The hardest part is implementation of rule1, first
+I need tp calculate the distance between Boids, then compute the center
+of mass. Rule 2 and Rule 3 are easier tha rule 1.The most time-consuming
+part is drawing the Boids. 
 __________________________________________________________________
 2) Answer any //QUESTION: items noted in the code
 
+Question 1:
 
+Question 2:
 
 
 
@@ -21,7 +26,7 @@ __________________________________________________________________
 __________________________________________________________________
 3) Describe any //CRUNCHY: extensions you implemented
 
-
+I add implementation to make birds flap in the air
 
 
 
@@ -31,8 +36,10 @@ __________________________________________________________________
 
 a) What is the time complexity of the boid update (in big Oh notation),
    justify.
+   Answer:  O(n^2), each Boids need to compare with every other boids
 
 b) What could you do to make the update more efficient?
+   Answer: 
 
 c) What is the greatest bottleneck of the program:
 

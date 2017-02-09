@@ -93,6 +93,7 @@ Written by: F. Estrada, Jun 2011.
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
+#include <time.h>
 
 // *************** GLOBAL VARIABLES *************************
 #define MAX_BOIDS 2000
@@ -103,6 +104,7 @@ int nBoids;				// Number of boids to dispay
 float Boid_Location[MAX_BOIDS][3];	// Pointers to dynamically allocated
 float Boid_Velocity[MAX_BOIDS][3];	// Boid position & velocity data
 float Boid_Color[MAX_BOIDS][3];	 	// RGB colour for each boid
+float Boid_flap[MAX_BOIDS][2]; //bird flap range
 float *modelVertices;                   // Imported model vertices
 int n_vertices;                         // Number of model vertices
 
@@ -224,8 +226,12 @@ int main(int argc, char** argv)
       Boid_Color[i][0]=0;
       Boid_Color[i][1]=.541;
       Boid_Color[i][2]=.92;
-
      }
+     srand(time(NULL));
+     //fly wings up or down
+     Boid_flap[i][0] = rand() % 2;
+     //fly wings position
+     Boid_flap[i][1] = rand() % 4;
      
     }
 
@@ -700,16 +706,16 @@ void updateBoid(int i)
  // to improve this bit?
  ///////////////////////////////////////////
  
-  float origin_velocity[1][3];
+ 
+  float origin_velocity[1][3], pc_i[1][3], pv_i[1][3], V1[1][3],V2[1][3],V3[1][3];
+  int r1_count, r3_count;
+  int j, k, p;
+  // record the current velocity
   origin_velocity[0][0] = Boid_Velocity[i][0];
   origin_velocity[0][1] = Boid_Velocity[i][1];
   origin_velocity[0][2] = Boid_Velocity[i][2];
 
-  float pc_i[1][3], pv_i[1][3], V1[1][3],V2[1][3],V3[1][3];
-  int r1_count, r3_count;
-  int j, k, p;
- //implementaion for r_rule1
-  
+ //implementaion for r_rule1 
    r1_count = 0;
    pc_i[0][0] = 0;
    pc_i[0][1] = 0;
@@ -773,7 +779,7 @@ void updateBoid(int i)
       float y_d = powf(Boid_Location[i][1] - Boid_Location[k][1], 2);
       float z_d = powf(Boid_Location[i][2] - Boid_Location[k][2], 2);
       float distance_diff = sqrtf(x_d + y_d + z_d);
-      // if distance with r_rule2
+      // if distance within r_rule2
       if(i!=k && distance_diff < r_rule2){
         V2[0][0] = Boid_Location[k][0] - Boid_Location[i][0];
         V2[0][1] = Boid_Location[k][1] - Boid_Location[i][1];
@@ -821,6 +827,7 @@ void updateBoid(int i)
     pv_i[0][1] = 0;
     pv_i[0][2] = 0;
     for(p=0; p<nBoids; p++){
+        // if distance within r_rule2
        if ( (i != p) && (radius_center(r_rule3, Boid_Location[i], Boid_Location[p]) == 1)){
         pv_i[0][0] += Boid_Velocity[p][0];
         pv_i[0][1] += Boid_Velocity[p][1];
@@ -1268,17 +1275,31 @@ int radius_center(int r_rule1, float* boid_j, float* boid_i){
   draw an airflight
 */
 void drawflight(int i){
-      glRotatef(290.0, 1.0, 0.0, 0.0);
 
+  //flap 15 times (3, -3)
+  if(Boid_flap[i][1] == -3){
+    Boid_flap[i][1] = Boid_flap[i][1] + 0.4;
+    Boid_flap[i][0] = 1;
+  }
+  else if(Boid_flap[i][1] == 3){
+    Boid_flap[i][1] = Boid_flap[i][1] - 0.4;
+    Boid_flap[i][0] = 0;
+  }
+
+  else{
+    if (Boid_flap[i][0] == 1){
+      Boid_flap[i][1] = Boid_flap[i][1] + 0.4;
+    }
+    else{
+      Boid_flap[i][1] = Boid_flap[i][1] - 0.4;
+    }
+  }
+  printf("%f\n", Boid_flap[i][1]);
+
+ 
+      glRotatef(70.0, 1.0, 0.0, 0.0);
       glBegin(GL_TRIANGLE_STRIP);
       glColor3f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2]);
-      glVertex3f(-3.5, 0.0, 1.0);
-      glVertex3f(-0.5, 0.0, 1.5);
-      glVertex3f(-0.5, 3.5, 1.5);
-      glEnd();
-
-      glBegin(GL_TRIANGLE_STRIP);
-      glColor4f(1, 1, 1, 0.8);
       glVertex3f(-.5, 0.0, 1.5);
       glVertex3f(-.5, 3.5, 1.5);
       glVertex3f(0.0, 0.0, 0.0);
@@ -1286,12 +1307,20 @@ void drawflight(int i){
       glVertex3f(.5, 0.0, 1.5);
       glVertex3f(0.5, 3.5, 1.5);
       glEnd();
-     
+
       glBegin(GL_TRIANGLE_STRIP);
-      glColor3f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2]);
-      glVertex3f(0.5, 0.0, 1.5);
+      glColor4f(1, 1, 1, 0.8);
+      glVertex3f(-.5, 0.0, 1.5);
+      glVertex3f(-.5, 3.5, 1.5);
+      glVertex3f(-3.5, 0.0, Boid_flap[i][1]);
+      glEnd();
+    
+      glBegin(GL_TRIANGLE_STRIP);
+      glColor4f(1, 1, 1, 0.8);
+      glVertex3f(.5, 0.0, 1.5);
       glVertex3f(.5, 3.5, 1.5);
-      glVertex3f(3.5, 0.0, 1.0);
+    
+      glVertex3f(3.5, 0.0, Boid_flap[i][1]);
       glEnd();
 }
 
