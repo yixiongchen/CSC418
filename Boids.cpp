@@ -143,7 +143,7 @@ void updateBoid(int i);
 void drawBoid(int i);
 void HSV2RGB(float H, float S, float V, float *R, float *G, float *B);
 int radius_center(int r_rule1, float *boid_j, float *boid_i);
-void drawbird(int i);
+void drawflight(int i);
 // ******************** FUNCTIONS ************************
 
 /*
@@ -1110,7 +1110,7 @@ void drawBoid(int i)
   glTranslatef(Boid_Location[i][0],Boid_Location[i][1],Boid_Location[i][2]);
   //gluSphere(my_quad,5,4,4); 
   
-  drawbird(i);
+  drawflight(i);
   glPopMatrix();		// Restore transformation matrix so it's
 			// ready for the next boid.
 
@@ -1264,25 +1264,34 @@ int radius_center(int r_rule1, float* boid_j, float* boid_i){
   return 0;
 }
 
-
-void drawbird(int i){
+/*
+  draw an airflight
+*/
+void drawflight(int i){
       glRotatef(290.0, 1.0, 0.0, 0.0);
+
       glBegin(GL_TRIANGLE_STRIP);
-      /* left wing */
       glColor3f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2]);
-      glVertex3f(-7.0, 0.0, 2.0);
-      glVertex3f(-1.0, 0.0, 3.0);
-      glVertex3f(-1.0, 7.0, 3.0);
-      /* left side */
-      glColor4f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2], 0.7);
+      glVertex3f(-3.5, 0.0, 1.0);
+      glVertex3f(-0.5, 0.0, 1.5);
+      glVertex3f(-0.5, 3.5, 1.5);
+      glEnd();
+
+      glBegin(GL_TRIANGLE_STRIP);
+      glColor4f(1, 1, 1, 0.8);
+      glVertex3f(-.5, 0.0, 1.5);
+      glVertex3f(-.5, 3.5, 1.5);
       glVertex3f(0.0, 0.0, 0.0);
-      glVertex3f(0.0, 8.0, 0.0);
-      /* right side */
-      glVertex3f(1.0, 0.0, 3.0);
-      glVertex3f(1.0, 7.0, 3.0);
-      /* final tip of right wing */
+      glVertex3f(0.0, 4.0, 0.0);
+      glVertex3f(.5, 0.0, 1.5);
+      glVertex3f(0.5, 3.5, 1.5);
+      glEnd();
+     
+      glBegin(GL_TRIANGLE_STRIP);
       glColor3f(Boid_Color[i][0],Boid_Color[i][1],Boid_Color[i][2]);
-      glVertex3f(7.0, 0.0, 2.0);
+      glVertex3f(0.5, 0.0, 1.5);
+      glVertex3f(.5, 3.5, 1.5);
+      glVertex3f(3.5, 0.0, 1.0);
       glEnd();
 }
 
