@@ -68,9 +68,9 @@ Written by: F. Estrada, Jun 2011.
 /*
   Headers for 3DS management - model loading for point clouds
 */
-#include<lib3ds/types.h>
-#include<lib3ds/mesh.h>
-#include<lib3ds/file.h>
+#include <lib3ds/types.h>
+#include <lib3ds/mesh.h>
+#include <lib3ds/file.h>
 
 /*
    Headers for OpenGL libraries. If you want to run this
@@ -233,7 +233,6 @@ int main(int argc, char** argv)
      Boid_flap[i][0] = rand() % 2;
      //fly wings position
      Boid_flap[i][1] = rand() % 4;
-     printf("direction: %d position: %d\n", Boid_flap[i][0],  Boid_flap[i][1]);
      
     }
 
