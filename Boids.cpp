@@ -227,11 +227,13 @@ int main(int argc, char** argv)
       Boid_Color[i][1]=.541;
       Boid_Color[i][2]=.92;
      }
+
      srand(time(NULL));
      //fly wings up or down
      Boid_flap[i][0] = rand() % 2;
      //fly wings position
      Boid_flap[i][1] = rand() % 4;
+     printf("direction: %d position: %d\n", Boid_flap[i][0],  Boid_flap[i][1]);
      
     }
 
@@ -1277,11 +1279,11 @@ int radius_center(int r_rule1, float* boid_j, float* boid_i){
 void drawflight(int i){
 
   //flap 15 times (3, -3)
-  if(Boid_flap[i][1] == -3){
+  if(Boid_flap[i][1] <= -3){
     Boid_flap[i][1] = Boid_flap[i][1] + 0.4;
     Boid_flap[i][0] = 1;
   }
-  else if(Boid_flap[i][1] == 3){
+  else if(Boid_flap[i][1] >= 3){
     Boid_flap[i][1] = Boid_flap[i][1] - 0.4;
     Boid_flap[i][0] = 0;
   }
